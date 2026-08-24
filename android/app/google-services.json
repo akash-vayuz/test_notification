@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "957467123862",
+    "project_id": "test-notification-99505",
+    "storage_bucket": "test-notification-99505.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:957467123862:android:19a83a68fa72df0238e2b7",
+        "android_client_info": {
+          "package_name": "org.vayuz.test_notification"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsvaWzzgx0-a29EzsrL0noaKlpW_Z_mJY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
