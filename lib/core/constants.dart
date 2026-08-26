@@ -28,5 +28,9 @@ class Constants {
   static const String proceed = 'proceed';
 
 
+  static const String messages = 'Messages';
+  static const String enterYourMessages = "Enter your message";
+  static const String activeNow = "Active now";
+
 
 }

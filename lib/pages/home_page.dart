@@ -53,7 +53,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _handleMessage(RemoteMessage message) {
-    print(message.data);
     if (message.data.containsKey('counter')) {
       setState(() {
         _counter = int.parse(message.data['counter']);
