@@ -58,20 +58,33 @@ class _ChatScreenViewState extends State<ChatScreenView> {
         //     scrollToBottom();
         //   }
         // });
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          scrollToBottom();
+        });
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    if (bottomInset > 0) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        scrollToBottom();
+      });
+    }
   }
 
   void scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.jumpTo(
-        _scrollController.position.maxScrollExtent + 100,
+        _scrollController.position.maxScrollExtent + 55,
         // duration: const Duration(milliseconds: 300),
         // curve: Curves.easeOut,
       );
-      print("jumps");
-      print(_scrollController.position.maxScrollExtent);
-      print(_scrollController.position.pixels);
     }
     // _scrollController.addListener((){print(_scrollController.position);});
   }
@@ -194,9 +207,9 @@ class _ChatScreenViewState extends State<ChatScreenView> {
             flipX: true,
             child: Container(
               padding: const EdgeInsets.only(left: 2),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: primaryColor,
-                borderRadius: BorderRadius.circular(30),
+                shape: BoxShape.circle,
               ),
               child: const Padding(
                 padding: EdgeInsets.all(12),
@@ -250,9 +263,9 @@ class _ChatScreenViewState extends State<ChatScreenView> {
           child: Container(
             // padding: const EdgeInsets.all(12),
             padding: const EdgeInsets.only(left: 2),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
               color: primaryColor,
-              borderRadius: BorderRadius.circular(30),
             ),
             child: const Padding(
               padding: EdgeInsets.all(12),
