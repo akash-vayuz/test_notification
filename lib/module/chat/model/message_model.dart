@@ -1,8 +1,12 @@
+enum MessageType { text, image, file }
+
 class MessageModel {
   final int? id;
   final String content;
   final int senderId;
   final int receiverId;
+  final MessageType type;
+  final String? path;
   final DateTime createdAt;
 
   MessageModel({
@@ -10,6 +14,9 @@ class MessageModel {
     required this.content,
     required this.senderId,
     required this.receiverId,
+    this.path,
+    this.type = MessageType.text,
+
     required this.createdAt,
   });
 
@@ -19,6 +26,8 @@ class MessageModel {
       content: json['content'],
       senderId: json["sender_id"],
       receiverId: json['receiver_id'],
+      type: MessageType.values[json['type']],
+      path: json['path'],
       createdAt: DateTime.fromMillisecondsSinceEpoch(json['created_at']),
     );
   }
@@ -29,6 +38,8 @@ class MessageModel {
       'sender_id': senderId,
       'receiver_id': receiverId,
       'created_at': createdAt.millisecondsSinceEpoch,
+      'type': type.index,
+      'path': path,
     };
   }
 }

@@ -64,7 +64,7 @@ class MyTextField extends StatelessWidget {
                 suffixIcon: sufficIcon,
                 hintText: hintText,
                 hintStyle: const TextStyle(color: whiteColor),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 fillColor: transparentColor,
               ),
             ),

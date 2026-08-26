@@ -23,6 +23,8 @@ dependencies:
   provider: ^6.1.5+1
   sqflite: ^2.4.2+1
   path: ^1.9.1
+  file_picker_pro: ^3.1.0
+  open_share_plus: ^3.0.0
 
 dev_dependencies:
   flutter_test:

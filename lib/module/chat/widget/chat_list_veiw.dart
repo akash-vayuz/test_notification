@@ -24,6 +24,7 @@ class ChatListVeiw extends StatelessWidget {
           Divider(color: dividerColor),
           Expanded(
             child: ListView.separated(
+              
               itemCount: users.length,
               itemBuilder: (_, index) {
                 final user = users[index];
@@ -35,7 +36,7 @@ class ChatListVeiw extends StatelessWidget {
               separatorBuilder: (_, _) => Divider(color: dividerColor),
             ),
           ),
-          Divider(color: dividerColor),
+        
         ],
       ),
     );

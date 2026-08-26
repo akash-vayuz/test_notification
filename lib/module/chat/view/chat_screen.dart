@@ -1,3 +1,4 @@
+import 'package:file_picker_pro/files.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_notification/module/chat/controller/chat_controller.dart';
@@ -37,17 +38,22 @@ class _ChatScreenState extends State<ChatScreen> {
 
     return ChatScreenView(
       messages: chatScreenController.messages,
-          // .where(
-          //   (message) =>
-          //       message.receiverId == widget.user.id || message.senderId == widget.user.id,
-          // )
-          // .toList(),
+      // .where(
+      //   (message) =>
+      //       message.receiverId == widget.user.id || message.senderId == widget.user.id,
+      // )
+      // .toList(),
       user: widget.user,
+      fileData: chatScreenController.fileDate,
       messageController: chatScreenController.messageController,
       onLeftClick: () =>
           chatScreenController.sendMessage(widget.user.id!, true),
       onRightClick: () =>
           chatScreenController.sendMessage(widget.user.id!, false),
+
+      onFileSelected: (fileData) => chatScreenController.setFileData(fileData),
+      onFileClose: () => chatScreenController.clearFile(),
+      onFileOpen: () => Files.viewFile(fileData: chatScreenController.fileDate),
     );
   }
 }

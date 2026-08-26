@@ -34,6 +34,8 @@ class LocalStorage {
             sender_id INTEGER NOT NULL,
             receiver_id INTEGER NOT NULL,
             created_at INTEGER NOT NULL,
+            type INTEGER DEFAULT 0,
+            path TEXT,
             FOREIGN KEY (sender_id) REFERENCES user(id),
             FOREIGN KEY (receiver_id) REFERENCES user(id)
           )
