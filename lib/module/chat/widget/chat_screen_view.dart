@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:audio_waveforms/audio_waveforms.dart';
 import 'package:file_picker_pro/file_data.dart';
 import 'package:file_picker_pro/file_picker.dart';
 import 'package:file_picker_pro/files.dart';
@@ -23,7 +24,10 @@ class ChatScreenView extends StatefulWidget {
   final void Function(FileData) onFileSelected;
   final void Function() onFileClose;
   final void Function() onFileOpen;
+  final void Function()? onRecorderTap;
+  final RecorderController recorderController;
   final FileData fileData;
+  final bool isRecording;
 
   const ChatScreenView({
     super.key,
@@ -33,10 +37,13 @@ class ChatScreenView extends StatefulWidget {
     required this.messageController,
     required this.messages,
     required this.onFileClose,
+    this.onRecorderTap,
     required this.fileData,
+    this.isRecording = false,
     required this.onFileOpen,
 
     required this.onFileSelected,
+    required this.recorderController,
   });
 
   @override
@@ -146,17 +153,7 @@ class _ChatScreenViewState extends State<ChatScreenView> {
                     color: primaryColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: widget.fileData.fileMimeType == "application/pdf"
-                      ? const Icon(
-                          Icons.picture_as_pdf_rounded,
-                          size: 48,
-                          color: whiteColor,
-                        )
-                      : Image.file(
-                          File(widget.fileData.path),
-                          height: 48,
-                          width: 48,
-                        ),
+                  child: _buildFilePreview(widget.fileData.fileMimeType),
                 ),
               ),
               Positioned(
@@ -189,8 +186,82 @@ class _ChatScreenViewState extends State<ChatScreenView> {
             ],
           ),
         ],
+        Align(
+          alignment: Alignment.bottomRight,
+          child: GestureDetector(
+            onTap: () => widget.onRecorderTap?.call(),
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: widget.isRecording ? redColor : primaryColor,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                widget.isRecording ? Icons.mic_off_rounded : Icons.mic,
+                color: whiteColor,
+              ),
+            ),
+          ),
+        ),
         _buildActionRow(context),
       ],
+    );
+  }
+
+  Widget _buildFilePreview(String fileType) {
+    if (fileType.contains("pdf")) {
+      return const Icon(
+        Icons.picture_as_pdf_rounded,
+        size: 48,
+        color: whiteColor,
+      );
+    } else if (fileType.contains("audio")) {
+      return const Icon(Icons.audiotrack_rounded, size: 48, color: whiteColor);
+    } else if (fileType.contains("text")) {
+      return const Icon(
+        Icons.text_snippet_rounded,
+        size: 48,
+        color: whiteColor,
+      );
+    } else {
+      return Image.file(File(widget.fileData.path), height: 48, width: 48);
+    }
+  }
+
+  Widget _buildAudioPlayer() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 4),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: borderColor),
+              color: primaryColor,
+              // gradient: LinearGradient(
+              //   begin: Alignment.topCenter,
+              //   end: Alignment.bottomCenter,
+              //   colors: [gradientWhite, gradientBlack],
+              // ),
+            ),
+      child: Row(
+        children: [
+          AudioWaveforms(
+            enableGesture: true,
+            size: Size(MediaQuery.of(context).size.width / 2, 50),
+            recorderController: widget.recorderController,
+            waveStyle: const WaveStyle(
+              waveColor: whiteColor,
+              extendWaveform: true,
+              showMiddleLine: false,
+            ),
+            // decoration: BoxDecoration(
+            //   borderRadius: BorderRadius.circular(20.0),
+            //   color: primaryColor,
+            // ),
+            padding: const EdgeInsets.symmetric(horizontal: 18, ),
+            // margin: const EdgeInsets.symmetric(horizontal: 15),
+          ),
+        ],
+      ),
     );
   }
 
@@ -219,40 +290,44 @@ class _ChatScreenViewState extends State<ChatScreenView> {
           ),
         ),
         Expanded(
-          child: Center(
-            child: MyTextField(
-              controller: widget.messageController,
-              hintText: Constants.enterYourMessages,
-              sufficIcon: IconButton(
-                onPressed: () {},
-                icon: FilePicker(
-                  view: false,
-                  // delete: false,
-                  context: context,
-                  height: 100,
-                  fileData: widget.fileData,
-                  crop: true,
-                  maxFileSizeInMb: 10,
-                  allowedExtensions: const [
-                    Files.txt,
-                    Files.png,
-                    Files.jpg,
-                    Files.pdf,
-                  ],
-                  // onSelected: (fileData) {
+          child: widget.isRecording
+          // child: true
+              ? _buildAudioPlayer()
+              : MyTextField(
+                  controller: widget.messageController,
+                  hintText: Constants.enterYourMessages,
+                  sufficIcon: IconButton(
+                    onPressed: () {},
+                    icon: FilePicker(
+                      view: false,
+                      delete: false,
+                      context: context,
+                      height: 100,
+                      fileData: widget.fileData,
+                      crop: true,
+                      maxFileSizeInMb: 10,
+                      allowedExtensions: const [
+                        Files.txt,
+                        Files.png,
+                        Files.jpg,
+                        Files.pdf,
+                        Files.mp3,
+                        Files.wav,
+                        Files.m4a,
+                      ],
+                      // onSelected: (fileData) {
 
-                  //   setState(() {});
-                  // },
-                  onSelected: (fileData) => widget.onFileSelected(fileData),
-                  onCancel: (message, messageCode) {
-                    debugPrint("[$messageCode] $message");
-                  },
+                      //   setState(() {});
+                      // },
+                      onSelected: (fileData) => widget.onFileSelected(fileData),
+                      onCancel: (message, messageCode) {
+                        debugPrint("[$messageCode] $message");
+                      },
 
-                  child: const Icon(Icons.add, color: whiteColor, size: 20),
+                      child: const Icon(Icons.add, color: whiteColor, size: 20),
+                    ),
+                  ),
                 ),
-              ),
-            ),
-          ),
         ),
         GestureDetector(
           behavior: HitTestBehavior.opaque,

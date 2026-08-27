@@ -36,24 +36,31 @@ class _ChatScreenState extends State<ChatScreen> {
       );
     }
 
-    return ChatScreenView(
-      messages: chatScreenController.messages,
-      // .where(
-      //   (message) =>
-      //       message.receiverId == widget.user.id || message.senderId == widget.user.id,
-      // )
-      // .toList(),
-      user: widget.user,
-      fileData: chatScreenController.fileDate,
-      messageController: chatScreenController.messageController,
-      onLeftClick: () =>
-          chatScreenController.sendMessage(widget.user.id!, true),
-      onRightClick: () =>
-          chatScreenController.sendMessage(widget.user.id!, false),
+    return PopScope(
+      onPopInvokedWithResult: (_, _) {
+        chatScreenController.clearControllers();
+      },
+      child: ChatScreenView(
+        messages: chatScreenController.messages,
+        user: widget.user,
+        fileData: chatScreenController.fileDate,
+        messageController: chatScreenController.messageController,
+        onLeftClick: () =>
+            chatScreenController.sendMessage(widget.user.id!, true),
+        onRightClick: () =>
+            chatScreenController.sendMessage(widget.user.id!, false),
 
-      onFileSelected: (fileData) => chatScreenController.setFileData(fileData),
-      onFileClose: () => chatScreenController.clearFile(),
-      onFileOpen: () => Files.viewFile(fileData: chatScreenController.fileDate),
+        onFileSelected: (fileData) {
+          chatScreenController.setFileData(fileData);
+        },
+        onFileClose: () => chatScreenController.clearFile(),
+        onFileOpen: () =>
+            Files.viewFile(fileData: chatScreenController.fileDate),
+        recorderController: chatScreenController.recorderController,
+        isRecording: chatScreenController.isRecording,
+        onRecorderTap:()=> chatScreenController.startOrStopRecording(),
+        
+      ),
     );
   }
 }
