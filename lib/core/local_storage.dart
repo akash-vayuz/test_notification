@@ -1,7 +1,9 @@
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:test_notification/core/constants.dart';
 import 'package:test_notification/core/user_me.dart';
 import 'package:test_notification/module/chat/model/users_model.dart';
+import 'package:test_notification/module/club/model/club_model.dart';
 
 class LocalStorage {
   static const String databaseName = 'app.db';
@@ -41,12 +43,24 @@ class LocalStorage {
           )
 ''');
 
-  db.insert("user", {
-    'id': UserMe.id,
-    'name': UserMe.name,
-    'last_name': UserMe.lastName,
-    'email': UserMe.email,
-  });
+        await db.execute('''
+            CREATE TABLE clubs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            topics INTEGER NOT NULL,
+            members INTEGER NOT NULL,
+            about TEXT NOT NULL,
+            type INTEGER DEFAULT 0,
+            isJoined INTEGER DEFAULT 0
+            )
+          ''');
+
+        db.insert("user", {
+          'id': UserMe.id,
+          'name': UserMe.name,
+          'last_name': UserMe.lastName,
+          'email': UserMe.email,
+        });
         await db.insert(
           'user',
           UsersModel(
@@ -79,6 +93,8 @@ class LocalStorage {
             email: 'jash@email.com',
           ).toMap(),
         );
+
+        await dummyData(db);
         // INSERT INTO user
         // VALUES
         // (1, 'Alex', 'Wolf', 'alex@email.com'),
@@ -96,4 +112,89 @@ class LocalStorage {
 
     await databaseFactory.deleteDatabase(path);
   }
+}
+
+Future<void> dummyData(Database db) async {
+  await db.insert(
+    'clubs',
+    ClubModel(
+      name: "Car Poolers",
+      topics: 5,
+      members: 20,
+      about: Constants.loremIpsum,
+      isJoined: true,
+      type: ClubType.public,
+      
+    ).toMap(),
+  );
+  await db.insert(
+    'clubs',
+    ClubModel(
+      name: "Women in Tech",
+      topics: 5,
+      type: ClubType.public,
+      members: 20,
+      about: Constants.loremIpsum,
+    ).toMap(),
+  );
+  await db.insert(
+    'clubs',
+    ClubModel(
+      name: "The 5PM Club/ Chai pe charcha",
+      topics: 5,
+      about: Constants.loremIpsum,
+      members: 20,
+      isJoined: true,
+    ).toMap(),
+  );
+  await db.insert(
+    'clubs',
+    ClubModel(
+      name: "Humans of Anacity",
+      topics: 5,
+      about: Constants.loremIpsum,
+      members: 20,
+    ).toMap(),
+  );
+  await db.insert(
+    'clubs',
+    ClubModel(
+      name: "Car Poolers",
+      topics: 5,
+      about: Constants.loremIpsum,
+      members: 20,
+      isJoined: true,
+    ).toMap(),
+  );
+  await db.insert(
+    'clubs',
+    ClubModel(
+      name: "10K Steps a Day",
+      topics: 5,
+      members: 20,
+      about: Constants.loremIpsum,
+      type: ClubType.public,
+      isJoined: true,
+    ).toMap(),
+  );
+  await db.insert(
+    'clubs',
+    ClubModel(
+      name: "Foodies of Anacity",
+      topics: 5,
+      members: 20,
+      about: Constants.loremIpsum,
+      type: ClubType.public,
+    ).toMap(),
+  );
+  await db.insert(
+    'clubs',
+    ClubModel(
+      name: "Tect Talks",
+      topics: 5,
+      members: 20,
+      type: ClubType.public,
+      about: Constants.loremIpsum,
+    ).toMap(),
+  );
 }

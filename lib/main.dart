@@ -10,7 +10,9 @@ import 'package:test_notification/module/chat/controller/chat_controller.dart';
 import 'package:test_notification/module/chat/controller/chat_list_controller.dart';
 import 'package:test_notification/module/chat/service/message_service.dart';
 import 'package:test_notification/module/chat/service/user_service.dart';
-import 'package:test_notification/module/chat/view/chat_list_screen.dart';
+import 'package:test_notification/module/club/controller/club_controller.dart';
+import 'package:test_notification/module/club/service/club_service.dart';
+import 'package:test_notification/module/club/view/club_list_screeb.dart';
 
 final localNotifictionsPlugin = FlutterLocalNotificationsPlugin();
 
@@ -36,6 +38,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => ChatListController(UserService(db)),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => ClubController(ClubService(db)),
         ),
       ],
       child: const MyApp(),
@@ -70,7 +75,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: primaryColor)),
       debugShowCheckedModeBanner: false,
-      home: const ChatListScreen(),
+      home: const ClubListScreen(),
     );
   }
 }
