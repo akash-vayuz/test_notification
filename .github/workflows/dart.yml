@@ -55,4 +55,13 @@ jobs:
         with:
           name: app-release
           path: build/app/outputs/flutter-apk/app-release.apk
+
+
+      - name: Upload APK to Google Drive
+        uses: logickoder/google-drive-upload@1.0.1
+        with:
+          credentials: ${{ secrets.GCP_CREDENTIALS }}
+          filename: "build/app/outputs/flutter-apk/app-release.apk"
+          folderID: ${{ secrets.DRIVE_FOLDER_ID }}
+          overwrite: "true"
         
