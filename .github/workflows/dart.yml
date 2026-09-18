@@ -57,11 +57,83 @@ jobs:
           path: build/app/outputs/flutter-apk/app-release.apk
 
 
+              # Create Google service account JSON
+      - name: Setup Google service account
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GCP_CREDENTIALS }}
+        run: |
+          printf '%s' "$GOOGLE_SERVICE_ACCOUNT_JSON" \
+            > "$RUNNER_TEMP/service-account.json"
+
+      # Install Google Drive CLI
+      - name: Install gdrive uploader
+        run: |
+          pip install --upgrade google-api-python-client google-auth google-auth-httplib2
+
+      # Upload APK to Google Drive
       - name: Upload APK to Google Drive
-        uses: logickoder/google-drive-upload@1.0.1
-        with:
-          credentials: ${{ secrets.GCP_CREDENTIALS }}
-          filename: "build/app/outputs/flutter-apk/app-release.apk"
-          folderID: ${{ secrets.DRIVE_FOLDER_ID }}
-          overwrite: "true"
+        env:
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.DRIVE_FOLDER_ID }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/service-account.json
+        run: |
+          python <<'PY'
+          import os
+          from google.oauth2 import service_account
+          from googleapiclient.discovery import build
+          from googleapiclient.http import MediaFileUpload
+
+          SERVICE_ACCOUNT_FILE = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+          FOLDER_ID = os.environ["GOOGLE_DRIVE_FOLDER_ID"]
+
+          APK_PATH = "build/app/outputs/flutter-apk/app-release.apk"
+
+          credentials = service_account.Credentials.from_service_account_file(
+              SERVICE_ACCOUNT_FILE,
+              scopes=["https://www.googleapis.com/auth/drive.file"]
+          )
+
+          drive = build(
+              "drive",
+              "v3",
+              credentials=credentials
+          )
+
+          file_metadata = {
+              "name": "app-release.apk",
+              "parents": [FOLDER_ID],
+          }
+
+          media = MediaFileUpload(
+              APK_PATH,
+              mimetype="application/vnd.android.package-archive",
+              resumable=True,
+          )
+
+          uploaded_file = drive.files().create(
+              body=file_metadata,
+              media_body=media,
+              fields="id,name,webViewLink"
+          ).execute()
+
+          print("Uploaded successfully!")
+          print("File ID:", uploaded_file["id"])
+          print("File name:", uploaded_file["name"])
+          print("Drive link:", uploaded_file.get("webViewLink"))
+          PY
+
+      # Remove sensitive files
+      - name: Cleanup signing files
+        if: always()
+        run: |
+          rm -f android/key.properties
+          rm -f android/app/keystore/upload-keystore.jks
+          rm -f "$RUNNER_TEMP/service-account.json"
+
+      # - name: Upload APK to Google Drive
+      #   uses: logickoder/google-drive-upload@1.0.1
+      #   with:
+      #     credentials: ${{ secrets.GCP_CREDENTIALS }}
+      #     filename: "build/app/outputs/flutter-apk/app-release.apk"
+      #     folderID: ${{ secrets.DRIVE_FOLDER_ID }}
+      #     overwrite: "true"
         
